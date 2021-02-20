@@ -1,0 +1,63 @@
+BROKER SCHEMA com.cateina.biglender_dataservice
+
+
+CREATE COMPUTE MODULE DataRequest_And_Transformation
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		-- Set message headers.
+		SET OutputRoot.Properties = InputRoot.Properties;
+		SET OutputRoot.HTTPReplyHeader = InputRoot.HTTPInputHeader;
+		SET OutputRoot.Properties.CodedCharSetId = InputRoot.Properties.CodedCharSetId;
+		SET OutputRoot.Properties.Encoding = InputRoot.Properties.Encoding;
+	    DECLARE refPaymetAPIResponseHeader REFERENCE TO OutputRoot.HTTPReplyHeader;
+	    DECLARE CONTENT_TYPE_MIME_JSON CONSTANT CHARACTER 'application/json';
+	    
+	    -- [19-Feb-2021]: API request is a JSON, so the response would be JSON as well. 
+		SET OutputRoot.HTTPReplyHeader."Content-Type" = CONTENT_TYPE_MIME_JSON;
+		
+		DECLARE chotachetan  CHARACTER ;
+		CREATE FIELD chotachetan.Response[] ;
+		SET chotachetan.Response[] = PASSTHRU('select loan_id, loan_amount, loan_date FROM chotachetandb') ;
+		
+		
+		SET Environment.Variable.Result[] = LIST{chotachetan.Response[]};
+		DECLARE limitcount INTEGER CARDINALITY (Environment.Variable.Result[]);
+		DECLARE i INTEGER 1;
+		DECLARE j INTEGER 1;
+		
+	IF (limitcount = 0) THEN
+		SET OutputRoot.JSON.Data.Response.RespBody.Status = 'Failure';
+		SET OutputRoot.JSON.Data.Response.RespBody.ErrorCode = '4';
+		SET OutputRoot.JSON.Data.Response.RespBody.ErrorDesc = 'No Record Found';
+	ELSEIF (limitcount > 0) THEN
+		CREATE FIELD OutputRoot.JSON.Data.Response IDENTITY(JSON.Array)Response;
+		WHILE (i <= limitcount)  DO
+			SET OutputRoot.JSON.Data.Response.Item[j].loan_id = Environment.Variable.Result[i].loan_id ;
+			SET OutputRoot.JSON.Data.Response.Item[j].loan_amount = Environment.Variable.Result[i].loan_amount ;
+			SET OutputRoot.JSON.Data.Response.Item[j].loan_date = Environment.Variable.Result[i].loan_date ;
+					PROPAGATE TO TERMINAL 'out';
+			SET j= j+1;
+			SET i= i+1;
+		END WHILE;
+	END IF ;
+     
+		
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

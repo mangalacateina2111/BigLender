@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmWSRequest.msgnode="ComIbmWSRequest.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="com/cateina/biglender_dataservice/ChhotaChetan_Data_Updates.msgflow" nsPrefix="com_cateina_biglender_dataservice_ChhotaChetan_Data_Updates.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="ChhotaChetan_Data_Updates" bundleName="com/cateina/biglender_dataservice/ChhotaChetan_Data_Updates" pluginId="BigLender_DataService"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/BigLender_DataService/icons/full/obj16/ChhotaChetan_Data_Updates.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/BigLender_DataService/icons/full/obj30/ChhotaChetan_Data_Updates.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="47,111">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="com/cateina/biglender_dataservice/ChhotaChetan_Data_Updates" pluginId="BigLender_DataService"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="642,123">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="com/cateina/biglender_dataservice/ChhotaChetan_Data_Updates" pluginId="BigLender_DataService"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="94,23" computeExpression="esql://routine/com.cateina.biglender_dataservice#DataRequest_And_Transformation.Main">
+        <translation xmi:type="utility:ConstantString" string="DataRequest_and_Transformation"/>
+      </nodes>
+      <nodes xmi:type="ComIbmWSRequest.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="296,115" URLSpecifier="http://localhost:7800/api/sass" httpVersion="1.1" protocol="TLS">
+        <translation xmi:type="utility:ConstantString" string="Request_to_SaaS"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="467,228" computeExpression="esql://routine/com.cateina.biglender_dataservice#MySQL_Response.Main">
+        <translation xmi:type="utility:ConstantString" string="MySQL_Response"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_1" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>
